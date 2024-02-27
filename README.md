@@ -9,8 +9,55 @@ Complete Domain Specific Language (DSL) for GraphQL query in go. With this packa
 
 ## Quick start
 
-Install
+Install package
 
 ```bash
 $ go get github.com/denisart/go-graphql-query
 ```
+
+### Simple query
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/denisart/go-graphql-query/pkg/graphqlQuery"
+)
+
+func main() {
+	heroQuery := graphqlQuery.Field{
+		Name: "hero",
+		Fields: []graphqlQuery.Selection{
+			&graphqlQuery.Field{
+				Name: "hero",
+				Fields: []graphqlQuery.Selection{
+					&graphqlQuery.StringField{Value: "name"},
+				},
+			},
+		},
+	}
+
+	operation := graphqlQuery.Operation{
+		Type:   graphqlQuery.QUERY,
+		Name:   nil,
+		Fields: []graphqlQuery.Selection{&heroQuery},
+	}
+
+	fmt.Println(operation.RenderType())
+	/*
+		query {
+		  hero {
+		    hero {
+		      name
+		    }
+		  }
+		}
+	*/
+}
+```
+
+## How to use
+
+
