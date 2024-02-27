@@ -21,41 +21,34 @@ $ go get github.com/denisart/go-graphql-query
 package main
 
 import (
-	"fmt"
+    "fmt"
 
-	"github.com/denisart/go-graphql-query/pkg/graphqlQuery"
+    "github.com/denisart/go-graphql-query/pkg/graphqlQuery"
 )
 
 func main() {
-	heroQuery := graphqlQuery.Field{
-		Name: "hero",
-		Fields: []graphqlQuery.Selection{
-			&graphqlQuery.Field{
-				Name: "hero",
-				Fields: []graphqlQuery.Selection{
-					&graphqlQuery.StringField{Value: "name"},
-				},
-			},
-		},
-	}
+    heroQuery := graphqlQuery.Field{
+        Name: "hero",
+        Fields: []graphqlQuery.Selection{
+            &graphqlQuery.StringField{Value: "name"},
+        },
+    }
 
-	operation := graphqlQuery.Operation{
-		Type:   graphqlQuery.QUERY,
-		Name:   nil,
-		Fields: []graphqlQuery.Selection{&heroQuery},
-	}
+    operation := graphqlQuery.Operation{
+        Type:   graphqlQuery.QUERY,
+        Name:   nil,
+        Fields: []graphqlQuery.Selection{&heroQuery},
+    }
 
-	fmt.Println(operation.RenderType())
-	/*
-		query {
-		  hero {
-		    hero {
-		      name
-		    }
-		  }
-		}
-	*/
+    fmt.Println(operation.RenderType())
 }
+/*
+query {
+  hero {
+    name
+  }
+}
+*/
 ```
 
 ## How to use
@@ -77,20 +70,30 @@ func main() {
 we can to use **graphqlQuery.Operation** as like that
 
 ```go
-heroQuery := graphqlQuery.Field{
-    Name: "hero",
-    Fields: []graphqlQuery.Selection{
-        &graphqlQuery.StringField{Value: "name"},
-    },
-}
+package main
 
-operation := graphqlQuery.Operation{
-    Type:   graphqlQuery.QUERY,
-    Name:   nil,
-    Fields: []graphqlQuery.Selection{&heroQuery},
-}
+import (
+    "fmt"
 
-fmt.Println(operation.RenderType())
+    "github.com/denisart/go-graphql-query/pkg/graphqlQuery"
+)
+
+func main() {
+    heroQuery := graphqlQuery.Field{
+        Name: "hero",
+        Fields: []graphqlQuery.Selection{
+            &graphqlQuery.StringField{Value: "name"},
+        },
+    }
+
+    operation := graphqlQuery.Operation{
+        Type:   graphqlQuery.QUERY,
+        Name:   nil,
+        Fields: []graphqlQuery.Selection{&heroQuery},
+    }
+
+    fmt.Println(operation.RenderType())
+}
 /*
 query {
   hero {
@@ -119,28 +122,38 @@ Same way for the query with sub-fields
 we can to use `graphqlQuery.Selection` as like that
 
 ```go
-friendsField := graphqlQuery.Field{
-    Name: "friends",
-    Fields: []graphqlQuery.Selection{
-        &graphqlQuery.StringField{Value: "name"},
-    },
-}
+package main
 
-heroQuery := graphqlQuery.Field{
-    Name: "hero",
-    Fields: []graphqlQuery.Selection{
-        &graphqlQuery.StringField{Value: "name"},
-        &friendsField,
-    },
-}
+import (
+    "fmt"
 
-operation := graphqlQuery.Operation{
-    Type:   graphqlQuery.QUERY,
-    Name:   nil,
-    Fields: []graphqlQuery.Selection{&heroQuery},
-}
+    "github.com/denisart/go-graphql-query/pkg/graphqlQuery"
+)
 
-fmt.Println(operation.RenderType())
+func main() {
+    friendsField := graphqlQuery.Field{
+        Name: "friends",
+        Fields: []graphqlQuery.Selection{
+            &graphqlQuery.StringField{Value: "name"},
+        },
+    }
+
+    heroQuery := graphqlQuery.Field{
+        Name: "hero",
+        Fields: []graphqlQuery.Selection{
+            &graphqlQuery.StringField{Value: "name"},
+            &friendsField,
+        },
+    }
+
+    operation := graphqlQuery.Operation{
+        Type:   graphqlQuery.QUERY,
+        Name:   nil,
+        Fields: []graphqlQuery.Selection{&heroQuery},
+    }
+
+    fmt.Println(operation.RenderType())
+}
 /*
 query {
   hero {
@@ -158,37 +171,50 @@ query {
 For arguments in your query or fields ([https://graphql.org/learn/queries/#arguments](https://graphql.org/learn/queries/#arguments)) you can use **graphqlQuery.Argument**
 
 ```go
-idArg := graphqlQuery.Argument{
-    Name:  "id",
-    Value: &graphqlQuery.StringValue{Value: "1000"},
-}
-unitArg := graphqlQuery.Argument{
-    Name:  "unit",
-    Value: &graphqlQuery.EnumValue{Value: "FOOT"},
-}
+package main
 
-humanQuery := graphqlQuery.Field{
-    Name: "human",
-    Arguments: []*graphqlQuery.Argument{
-        &idArg,
-    },
-    Fields: []graphqlQuery.Selection{
-        &graphqlQuery.StringField{Value: "name"},
-        &graphqlQuery.Field{
-            Name: "height",
-            Arguments: []*graphqlQuery.Argument{
-                &unitArg,
+import (
+    "fmt"
+
+    "github.com/denisart/go-graphql-query/pkg/graphqlQuery"
+)
+
+func main() {
+    // argument for your id
+    idArg := graphqlQuery.Argument{
+        Name:  "id",
+        Value: &graphqlQuery.StringValue{Value: "1000"},
+    }
+    // argument for a field
+    unitArg := graphqlQuery.Argument{
+        Name:  "unit",
+        Value: &graphqlQuery.EnumValue{Value: "FOOT"},
+    }
+
+    humanQuery := graphqlQuery.Field{
+        Name: "human",
+        // use argument in top-level
+        Arguments: []*graphqlQuery.Argument{
+            &idArg,
+        },
+        Fields: []graphqlQuery.Selection{
+            &graphqlQuery.StringField{Value: "name"},
+            &graphqlQuery.Field{
+                Name: "height",
+                // use arguments for some field
+                Arguments: []*graphqlQuery.Argument{
+                    &unitArg,
+                },
             },
         },
-    },
-}
+    }
 
-operation := graphqlQuery.Operation{
-    Type:   graphqlQuery.QUERY,
-    Name:   nil,
-    Fields: []graphqlQuery.Selection{&humanQuery},
+    operation := graphqlQuery.Operation{
+        Type:   graphqlQuery.QUERY,
+        Name:   nil,
+        Fields: []graphqlQuery.Selection{&humanQuery},
+    }
 }
-
 /*
 query {
   human(
@@ -202,3 +228,7 @@ query {
 }
 */
 ```
+
+## Aliases
+
+**graphqlQuery.Field** has the special field for alias
