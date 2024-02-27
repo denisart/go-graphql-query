@@ -1,5 +1,9 @@
 package graphqlQuery
 
+type Alias struct {
+	Value string
+}
+
 type Selection interface {
 	renderSelection() string
 }
